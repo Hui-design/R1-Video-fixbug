@@ -1,14 +1,14 @@
 # R1-Video-fixbug
-
-最近有很多开源项目致力于将Deepseek-R1/GPRO引入到多模态任务中，其中[Open-R1-Video](https://github.com/Wang-Xiaodong1899/Open-R1-Video/)就是应用在Video Understanding的一个工作。我们在复现它的过程中，发现代码存在一个bug(**截止至2025-02-22**), 导致参考模型在get_per_token_probs时出现了问题，导致KL散度项起到不好的作用。另外，我们发现不止是Open-R1-Video存在这个问题，[open-r1-multimodal](https://github.com/EvolvingLMMs-Lab/open-r1-multimodal/blob/main/src/open_r1/trainer/grpo_trainer.py)也存在这个问题，让我怀疑到底是不是真的有这个bug，于此我们做了一些探索。
+Recently, there have been many open-source projects dedicated to applying Deepseek-R1/GPRO to multimodal tasks. Among them, [Open-R1-Video](https://github.com/Wang-Xiaodong1899/Open-R1-Video/) is one such project applied to video understanding. During our reproduction, we found a bug in the code (**until 2025-02-22**). This bug caused the reference model to have problems when executing the get_per_token_probs function, resulting in incorrect calculation of the KL divergence term.
+In addition, we found that not only Open-R1-Video has this problem, [open-r1-multimodal](https://github.com/EvolvingLMMs-Lab/open-r1-multimodal/blob/main/src/open_r1/trainer/grpo_trainer.py) also has this problem, which made us wonder whether this bug really exists, so we did some exploration.
 
 ## What is the bug?
-在Open-R1-Video/src/open_r1_video/trainer/grpo_trainer.py的444-453行中，当前模型model($$\pi_{\theta}$$)和ref_model($$\pi_{ref}$$)都需要过一下get_per_token_logps函数来跑一次model的forward获得logp。在GRPO中，对于$\pi_{\theta}$和$\pi_{\ref}$来说只是参数不一样，但是它们的输入是一样的（如Fig.1）。然而，在Open-R1-Video和open-r1-multimodal代码的实现中，这两个的输入是不一样的(如图2)，ref_model的输入少了**prompt_inputs。我们进一步check了一下[R1-V](https://github.com/Deep-Agent/R1-V/blob/main/src/r1-v/src/open_r1/trainer/grpo_trainer.py), 发现model和ref_model的输入是一样的。
-![Fig1](assert/fig1.jpg)
+In lines 444-453 of Open-R1-Video/src/open_r1_video/trainer/grpo_trainer.py, both the current model ($$\pi_{\theta}$$) and ref_model($$\pi_{ref}$$) require passing through the get_per_token_logps function to execute a forward function of the model and obtain log probabilities. In GRPO, $\pi_{\theta}$ and $\pi_{\ref}$ differ only in their parameters, while their inputs should be identical (as shown in Fig.1). However, in the implementations of both Open-R1-Video and open-r1-multimodal, the inputs to these models differ (see Fig. 2). Specifically, the reference model (ref_model) lacks the prompt_inputs argument. We further verified the implementation in R1-V and confirmed that the inputs to model and ref_model are indeed identical in that codebase. 
+![Fig1](assert/fig1.png)
 <center>Figure 1</center>
-![Fig2](assert/fig2.jpg)
+![Fig2](assert/fig2.png)
 <center>Figure 2</center>
-![Fig2](assert/fig3.jpg)
+![Fig2](assert/fig3.png)
 <center>Figure 3</center>
 
 ## What does the bug affect?
@@ -18,7 +18,7 @@ In the code, prompt_inputs mainly contain two keys: "pixel_values_videos" and "v
 /modeling_qwen2_vl.py/Qwen2VLForConditionalGeneration.forward). If both pixel_values_videos and pixel_values are None, the input to Inputs_embedd will be the embedding of <video_pad>, rather than the embedding obtained from pixel_values through the vision_tower. In this case, the reference model does not see any visual information, leading to an erroneous reference.
 2. Impact on KL Loss:
 The KL loss is affected because the KL divergence calculation in grpo relies on the formula KL($$\pi_{\theta},\pi_{ref}$$). Since the logps output from the reference model ($$\pi_{ref}$$) is incorrect, the KL divergence becomes problematic. Specifically, during initialization, the parameters of the model and the reference model are identical, meaning that $$\pi_{\theta}$$ and $$\pi_{ref}$$ should have the same values. Therefore, the correct initial value of KL divergence should be 0. However, in R1-Video, due to the incorrect logp from the reference model, the initial value of KL divergence is not 0.
-![Fig4](assert/fig4.jpg)
+![Fig4](assert/fig4.png)
 <center>Figure 4</center>
    
 ## The fixed version
