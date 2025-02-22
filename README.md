@@ -52,10 +52,10 @@ per_token_logps = per_token_logps[:, prompt_length - 1 :]
 
 with torch.inference_mode():
    if self.ref_model is not None:
-       ref_per_token_logps = get_per_token_logps(self.ref_model, prompt_completion_ids, **prompt_inputs)
+       ref_per_token_logps = get_per_token_logps(self.ref_model, prompt_completion_ids, **prompt_inputs) # fix_bug of r1-video
    else:
        with self.accelerator.unwrap_model(model).disable_adapter():
-           ref_per_token_logps = get_per_token_logps(model, prompt_completion_ids, **prompt_inputs)
+           ref_per_token_logps = get_per_token_logps(model, prompt_completion_ids, **prompt_inputs) # fix_bug of r1-video
 ```
 
 
