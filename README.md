@@ -13,7 +13,7 @@ In lines 444-453 of Open-R1-Video/src/open_r1_video/trainer/grpo_trainer.py, bot
 </div> 
 
 
-- However, in the grpo_trainer implementations of both [Open-R1-Video](https://github.com/HarryHsing/Open-R1-Video/blob/main/src/open_r1_video/trainer/grpo_trainer.py) and [open-r1-multimodal](https://github.com/EvolvingLMMs-Lab/open-r1-multimodal/blob/main/src/open_r1/trainer/grpo_trainer.py), the inputs differ. Specifically, the model has the **"\*\*prompt_inputs"** argument, while ref_model lacks the **"\*\*prompt_inputs"** argument.
+- However, in the grpo_trainer implementations of both [Open-R1-Video](https://github.com/Wang-Xiaodong1899/Open-R1-Video/blob/main/src/open_r1_video/trainer/grpo_trainer.py) and [open-r1-multimodal](https://github.com/EvolvingLMMs-Lab/open-r1-multimodal/blob/main/src/open_r1/trainer/grpo_trainer.py), the inputs differ. Specifically, the model has the **"\*\*prompt_inputs"** argument, while ref_model lacks the **"\*\*prompt_inputs"** argument.
 
 <div align='center'>
 <img src="assets/fig2.png" style="width: 70%">
