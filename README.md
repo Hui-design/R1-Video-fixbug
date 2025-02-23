@@ -1,10 +1,12 @@
 # R1-Video-fixbug
 
-## 🔥 News
-2025-02-23: [Open-R1-Video](https://github.com/Wang-Xiaodong1899/Open-R1-Video/) has merged our pull request, and they get performance gain based our fixed version
 
 Recently, many awesome open-source projects have dedicated to applying Deepseek-R1/GPRO to multimodal tasks. Among them, [Open-R1-Video](https://github.com/Wang-Xiaodong1899/Open-R1-Video/) is one such awesome project applied to video understanding. During our reproduction, we found a bug in the code (**until 2025-02-22**). This bug caused the reference model to have problems **when executing the `get_per_token_probs` function, resulting in incorrect calculation of the KL divergence term**.
 In addition, we found that not only Open-R1-Video has this problem, [open-r1-multimodal](https://github.com/EvolvingLMMs-Lab/open-r1-multimodal) also has this problem, which made us wonder whether this bug really exists, so we did some exploration.
+
+## 🔥 News
+2025-02-23: [Open-R1-Video](https://github.com/Wang-Xiaodong1899/Open-R1-Video/) has merged our pull request, and they get performance gain based our fixed version
+
 
 ## What is the bug?
 In lines 444-453 of Open-R1-Video/src/open_r1_video/trainer/grpo_trainer.py, both the current model ($$\pi_{\theta}$$) and ref_model ($$\pi_{ref}$$) require passing through the `get_per_token_logps` function to execute a model forward and obtain logps. 
