@@ -42,6 +42,8 @@ The KL loss is affected because the KL divergence calculation in grpo relies on 
 <img src="assets/fig4.png" style="width: 70%">
 </div> 
 
+Since the weight ($$\beta$$) of kl_loss is only 0.04, the impact of this bug won't be particularly significant, but there will still be some effect.
+
    
 ## The fixed version
 To resolve the issue, you should add **prompt_inputs in the get_per_token_logps method for the reference model. This will fix the bug as of February 22, 2025.
