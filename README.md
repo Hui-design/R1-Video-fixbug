@@ -5,7 +5,7 @@ Recently, many awesome open-source projects have dedicated to applying Deepseek-
 In addition, we found that not only Open-R1-Video has this problem, [open-r1-multimodal](https://github.com/EvolvingLMMs-Lab/open-r1-multimodal) also has this problem, which made us wonder whether this bug really exists, so we did some exploration.
 
 ## 🔥 News
-2025-02-23: [Open-R1-Video](https://github.com/Wang-Xiaodong1899/Open-R1-Video/) has merged our pull request, and they get performance gain based our fixed version
+2025-02-23: [Open-R1-Video](https://github.com/Wang-Xiaodong1899/Open-R1-Video/) has merged our pull request, and they get performance gains based on our fixed version
 
 
 ## What is the bug?
